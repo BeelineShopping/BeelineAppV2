@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Shopping Lists"
+        android:textSize="30dp"
         android:id="@+id/shoppingListTextView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />

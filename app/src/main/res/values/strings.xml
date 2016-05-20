@@ -20,7 +20,8 @@
         completions."
     </string>
     <string name="title_activity_test_swipe">TestSwipeActivity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="section_format"><u>Aisle: %1$s</u></string>
     <string name="title_activity_aisle_swipe">AisleSwipe</string>
+    <string name="aisle_placeholder"><u>Aisle:</u></string>
 
 </resources>

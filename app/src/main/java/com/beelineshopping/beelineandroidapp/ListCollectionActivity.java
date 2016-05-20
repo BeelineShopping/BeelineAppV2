@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.beelineshopping.beelineandroidapp.cursor_adapters.AisleAdapter;
+import com.beelineshopping.beelineandroidapp.cursor_adapters.ListCollectAdapter;
 import com.beelineshopping.beelineandroidapp.tasks.Ingredient;
 
 import java.util.ArrayList;
@@ -29,8 +31,12 @@ public class ListCollectionActivity extends AppCompatActivity {
 
         shoppingLists =  new ArrayList<String>();
         fillList();
-
+//-----------------------------------------------------------------------------
         shoppingListsListView = (ListView) findViewById(R.id.shoppingLists);
+//        Cursor list_c = getListCursor();
+//        ListCollectAdapter aaList1 = new ListCollectAdapter(this,list_c,0);
+//        shoppingListsListView.setAdapter(aaList1);
+//-------------------------------------------------------------------------------
         shoppingListsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, shoppingLists);
         shoppingListsListView.setAdapter(shoppingListsAdapter);
 
@@ -49,7 +55,7 @@ public class ListCollectionActivity extends AppCompatActivity {
     }
 
     public void shopAisles(String listName) {
-        Intent intent = new Intent(ListCollectionActivity.this, Aisles.class);
+        Intent intent = new Intent(ListCollectionActivity.this, AisleSwipe.class);
         intent.putExtra("listName", listName);
 
         startActivity(intent);
@@ -70,5 +76,18 @@ public class ListCollectionActivity extends AppCompatActivity {
             shoppingLists.add(c.getString(0));
         }
         c.close();
+    }
+
+    public Cursor getListCursor()
+    {
+        BeelineDbHelper mDbHelper = new BeelineDbHelper(this);
+
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        String query = "SELECT DISTINCT list_title,_id FROM ShoppingList";
+
+        Cursor c = db.rawQuery(query, null);
+
+        return c;
     }
 }

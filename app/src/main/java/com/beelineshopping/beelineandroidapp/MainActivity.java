@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         context = getApplicationContext();
 
-        //HttpHandler.setCredentials("test@example.com", "password");
+        HttpHandler.setCredentials("test@example.com", "password");
 
         if (isNetworkAvailable()) {
 

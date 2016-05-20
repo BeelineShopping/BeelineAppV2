@@ -12,14 +12,14 @@ import android.widget.TextView;
 import com.beelineshopping.beelineandroidapp.R;
 
 /**
- * Created by Shelby on 2/5/2016.
+ * Created by Shelby on 5/20/2016.
  */
-public class AisleAdapter extends CursorAdapter {
+public class ListCollectAdapter extends CursorAdapter{
     private LayoutInflater cursorInflater;
     private DatabaseUtils dbUtils;
 
     Context mContext;
-    public AisleAdapter(Context context, Cursor c, int flags) {
+    public ListCollectAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
 
         cursorInflater = (LayoutInflater) context.getSystemService(
@@ -40,7 +40,7 @@ public class AisleAdapter extends CursorAdapter {
 
 
         TextView textViewTitle = (TextView) view.findViewById(R.id.item);
-        String title = cursor.getString( cursor.getColumnIndex( "name") );
+        String title = cursor.getString( cursor.getColumnIndex( "list_title") );
         textViewTitle.setText(title);
     }
 }
