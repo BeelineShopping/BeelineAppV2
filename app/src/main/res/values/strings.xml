@@ -23,5 +23,7 @@
     <string name="section_format"><u>Aisle: %1$s</u></string>
     <string name="title_activity_aisle_swipe">AisleSwipe</string>
     <string name="aisle_placeholder"><u>Aisle:</u></string>
+    <string name="list_collect_shopping_title"><u>Shopping Lists</u></string>
+    <string name="list_dialog_title"><u>Shopping Lists:</u></string>
 
 </resources>

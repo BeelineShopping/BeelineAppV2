@@ -13,23 +13,43 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Shopping Lists"
-        android:textSize="30dp"
+        android:text="@string/list_collect_shopping_title"
+        android:textSize="42dp"
+        android:fontFamily="sans-serif-condensed"
+        android:textColor="@color/Teal"
         android:id="@+id/shoppingListTextView"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"/>
 
     <ListView
         android:id="@+id/shoppingLists"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/shoppingListTextView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:divider="@null"
-        android:dividerHeight="0dp"></ListView>
+        android:dividerHeight="0dp"
+        android:layout_below="@+id/shoppingListTextView"
+        android:layout_centerHorizontal="true"></ListView>
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="New Button"-->
+        <!--android:id="@+id/button"-->
+        <!--android:layout_alignBottom="@+id/shoppingLists"-->
+        <!--android:layout_alignRight="@+id/shoppingLists"-->
+        <!--android:layout_alignEnd="@+id/shoppingLists" />-->
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#1184be"
+        android:onClick="dialogList"
+        android:text="lists"
+        android:textColor="#fff"
+        android:layout_alignBottom="@+id/shoppingLists"
+        android:layout_alignRight="@+id/shoppingLists"
+        android:layout_alignEnd="@+id/shoppingLists"/>
 
 </RelativeLayout>

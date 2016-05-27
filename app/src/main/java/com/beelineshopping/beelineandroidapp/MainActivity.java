@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
             if (load) {
                 //Data loaded send user to ListCollectionActivity.
                 System.out.println("App data has been loaded, sending user to ListCollectionActivity");
-                Intent intent = new Intent(getApplicationContext(), ListCollectionActivity.class);
+                Intent intent = new Intent(getApplicationContext(), AisleSwipe.class);
                 startActivity(intent);
                 finish();
             } else {

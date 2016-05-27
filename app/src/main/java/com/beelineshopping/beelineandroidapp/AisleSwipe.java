@@ -7,6 +7,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -17,6 +18,7 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,8 +28,14 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.beelineshopping.beelineandroidapp.cursor_adapters.AisleAdapter;
+import com.beelineshopping.beelineandroidapp.cursor_adapters.ListCollectAdapter;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.ListHolder;
+import com.orhanobut.dialogplus.OnItemClickListener;
+import com.orhanobut.dialogplus.ViewHolder;
 
 import java.util.ArrayList;
 
@@ -43,6 +51,8 @@ public class AisleSwipe extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
+    ListCollectAdapter list_dialog_adapter;
+    ListView dialog_list;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -53,7 +63,21 @@ public class AisleSwipe extends AppCompatActivity {
 //        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
 //        getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
+
+        mContext = this;
+        mDbHelper = new BeelineDbHelper(this);
+        db = mDbHelper.getReadableDatabase();
+
         list_name = getIntent().getStringExtra("listName");
+
+        //Display list becomes first in cursor if user is coming from login view
+        if(list_name == null){
+            c = db.query(BeelineContract.ShoppingListDetails.TABLE_NAME, new String[]{"list_title"},
+                    null, null, null, null, null);
+            String crStr = dbUtils.dumpCursorToString(c);
+            c.moveToFirst();
+            list_name = c.getString(c.getColumnIndex("list_title"));
+        }
         setTitle(list_name);
         setContentView(R.layout.activity_aisle_swipe);
 
@@ -64,8 +88,6 @@ public class AisleSwipe extends AppCompatActivity {
         String whereClause = "ShoppingList.list_title = '" + list_name + "'";
         c = db.query(BeelineContract.ShoppingListDetails.TABLE_NAME, null,
                 whereClause, null, null, null, null);
-
-        String crStr = dbUtils.dumpCursorToString(c);
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -78,18 +100,76 @@ public class AisleSwipe extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-
+        //=========================================================================================
+        ArrayList<String> mLists = getTitles();
+        View view = getLayoutInflater().inflate(R.layout.dialogplus, null);
+        list_dialog_adapter = new ListCollectAdapter(this,mLists);
+        //shopAisles("Example List");
+        //=========================================================================================
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent listIn = new Intent(getApplicationContext(),ListCollectionActivity.class);
-                startActivity(listIn);
+                dialogList(view);
+//                Intent listIn = new Intent(getApplicationContext(),ListCollectionActivity.class);
+//                startActivity(listIn);
 //                Snackbar.make(view, "Go to lists", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
             }
         });
 
+    }
+
+    public ArrayList<String> getTitles()
+    {
+        BeelineDbHelper mDbHelper = new BeelineDbHelper(this);
+
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+        String query = "SELECT DISTINCT list_title FROM ShoppingList";
+
+        Cursor c = db.rawQuery(query, null);
+
+        ArrayList<String> titles = new ArrayList<String>();
+        while (c.moveToNext())
+        {
+            String title = c.getString( c.getColumnIndex( "list_title") );
+            titles.add(title);
+        }
+        c.close();
+        return titles;
+    }
+
+    public void dialogList(View view){
+        ListView modeList = new ListView(this);
+        //modeList.setAdapter(list_dialog);
+        //dialog_list.setAdapter(list_dialog_adapter);
+        DialogPlus dialog = DialogPlus.newDialog(mContext)
+                //.setContentHolder(new ViewHolder(R.layout.dialogplus))
+                .setContentHolder(new ListHolder())
+                //.setContentHeight(900)
+                .setGravity(Gravity.CENTER)
+                .setHeader(R.layout.dialogplus)
+                //.setContentBackgroundResource(R.drawable.fruitslist)
+                .setInAnimation(R.anim.abc_fade_in)
+                .setAdapter(list_dialog_adapter)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        shopAisles(item.toString());
+
+                    }
+                })
+                .setExpanded(true)  // This will enable the expand feature, (similar to android L share dialog)
+                .create();
+        dialog.show();
+    }
+
+    public void shopAisles(String listName) {
+        Intent intent = new Intent(AisleSwipe.this, AisleSwipe.class);
+        intent.putExtra("listName", listName);
+
+        startActivity(intent);
     }
 
 
@@ -183,6 +263,8 @@ public class AisleSwipe extends AppCompatActivity {
             list_view3.setAdapter(aaList3);
 
             String crStr = dbUtils.dumpCursorToString(cList1);
+
+
             return rootView;
         }
     }

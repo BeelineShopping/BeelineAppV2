@@ -6,41 +6,36 @@ import android.database.DatabaseUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.beelineshopping.beelineandroidapp.R;
 
+import java.util.ArrayList;
+
 /**
  * Created by Shelby on 5/20/2016.
  */
-public class ListCollectAdapter extends CursorAdapter{
-    private LayoutInflater cursorInflater;
-    private DatabaseUtils dbUtils;
-
-    Context mContext;
-    public ListCollectAdapter(Context context, Cursor c, int flags) {
-        super(context, c, flags);
-
-        cursorInflater = (LayoutInflater) context.getSystemService(
-                Context.LAYOUT_INFLATER_SERVICE);
-        mContext = context;
-
-        String crStr = dbUtils.dumpCursorToString(c);
-        String astring = "astring";
+public class ListCollectAdapter extends ArrayAdapter<String> {
+    Context mcontext;
+    ArrayList<String> mTitles;
+    public ListCollectAdapter(Context context, ArrayList<String> titles) {
+        super(context, 0, titles);
+        mcontext = context;
+        mTitles = titles;
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return cursorInflater.inflate(R.layout.list_adapter_layout, parent, false);
-    }
-
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-
-
-        TextView textViewTitle = (TextView) view.findViewById(R.id.item);
-        String title = cursor.getString( cursor.getColumnIndex( "list_title") );
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // Check if an existing view is being reused, otherwise inflate the view
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_collection_adapter_layout, parent, false);
+        }
+        TextView textViewTitle = (TextView) convertView.findViewById(R.id.item);
+        String title = mTitles.get(position);
         textViewTitle.setText(title);
+        // Return the completed view to render on screen
+        return convertView;
     }
 }
