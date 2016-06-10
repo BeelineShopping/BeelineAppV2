@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:drawable="@drawable/bee1" />
+    <item>
 <shape xmlns:android="http://schemas.android.com/apk/res/android" >
-    <solid android:color="@color/LightBlue"/>
+    <!--<solid android:color="@color/LightBlue"/>-->
     <stroke
         android:width="5dip"
         android:color="@color/colorPrimary" />
@@ -10,3 +13,5 @@
         android:bottomLeftRadius="10dp"/>
 
 </shape>
+</item>
+    </layer-list>

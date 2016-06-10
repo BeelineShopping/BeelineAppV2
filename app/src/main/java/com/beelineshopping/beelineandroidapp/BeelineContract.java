@@ -32,6 +32,7 @@ public class BeelineContract {
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_SECTION = "section";
         public static final String COLUMN_NAME_AISLE = "aisle";
+        public static final String COLUMN_NAME_STRIKEOUT = "strikeOut";
         public static final String COLUMN_NAME_STORE = "store";
         public static final String COLUMN_NAME_NULLABLE = null;
     }

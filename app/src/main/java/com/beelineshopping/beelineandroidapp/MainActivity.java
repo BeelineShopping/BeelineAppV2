@@ -1,7 +1,6 @@
 package com.beelineshopping.beelineandroidapp;
 
 import android.content.ContentValues;
-
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,30 +9,19 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import com.beelineshopping.beelineandroidapp.tasks.GetRequestTask;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.concurrent.ExecutionException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
     Context context;
-
-    String testStr;
     BeelineDbHelper mDbHelper = new BeelineDbHelper(this);
     DatabaseUtils dbUtils;
 
@@ -46,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         context = getApplicationContext();
 
-        HttpHandler.setCredentials("test@example.com", "password");
+        //HttpHandler.setCredentials("test@example.com", "password");
 
         if (isNetworkAvailable()) {
 
@@ -55,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
             //Load Lists =====================================================================
             //http requests
             GetRequestTask listTask = new GetRequestTask();
-            listTask.execute("https://beeline-db.herokuapp.com/api/v1/lists");
+            listTask.execute("http://45.55.5.83/api/v1/lists");
+            //listTask.execute("https://beeline-db.herokuapp.com/api/v1/lists");
             //DB setup
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
@@ -134,12 +123,6 @@ public class MainActivity extends AppCompatActivity {
                         c.close();
 
 
-//        if (c.moveToFirst()) { //data?
-//            String title = c.getString(c.getColumnIndex("title"));//show that data is accessible
-//            System.out.print("title");
-//        }
-
-
                     }
                 }
 
@@ -150,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             //Load user data=====================================================
             //http request
             GetRequestTask userTask = new GetRequestTask();
-            userTask.execute("https://beeline-db.herokuapp.com/api/v1/user");
+            userTask.execute("http://45.55.5.83/api/v1/user");
             try {
                 String response = userTask.get();
                 if (response.equals("ERROR")) {
@@ -237,9 +220,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement

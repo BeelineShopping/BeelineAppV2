@@ -5,12 +5,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -20,39 +19,33 @@ import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import android.view.Window;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.beelineshopping.beelineandroidapp.cursor_adapters.AisleAdapter;
 import com.beelineshopping.beelineandroidapp.cursor_adapters.ListCollectAdapter;
+import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ListHolder;
 import com.orhanobut.dialogplus.OnItemClickListener;
-import com.orhanobut.dialogplus.ViewHolder;
-
 import java.util.ArrayList;
 
 public class AisleSwipe extends AppCompatActivity {
     Context mContext;
+
     private static ArrayList<String> aisle_list = new ArrayList<String>();
     private static BeelineDbHelper mDbHelper;
     private static SQLiteDatabase db;
-    private static String crStr;
     private static Cursor c;
     private static DatabaseUtils dbUtils =  new DatabaseUtils();
     private static String list_name;
 
+    public NiftyDialogBuilder dialogBuilder;
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
     ListCollectAdapter list_dialog_adapter;
-    ListView dialog_list;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -60,14 +53,13 @@ public class AisleSwipe extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-//        getSupportActionBar().hide();
         super.onCreate(savedInstanceState);
 
+        //basic setup
         mContext = this;
         mDbHelper = new BeelineDbHelper(this);
         db = mDbHelper.getReadableDatabase();
-
+        //Get list to be displayed
         list_name = getIntent().getStringExtra("listName");
 
         //Display list becomes first in cursor if user is coming from login view
@@ -75,14 +67,21 @@ public class AisleSwipe extends AppCompatActivity {
             c = db.query(BeelineContract.ShoppingListDetails.TABLE_NAME, new String[]{"list_title"},
                     null, null, null, null, null);
             String crStr = dbUtils.dumpCursorToString(c);
-            c.moveToFirst();
-            list_name = c.getString(c.getColumnIndex("list_title"));
+            if(c.getCount() != 0) {
+                c.moveToFirst();
+
+                list_name = c.getString(c.getColumnIndex("list_title"));
+            }else{
+                list_name = "No lists have been created";
+            }
         }
         setTitle(list_name);
         setContentView(R.layout.activity_aisle_swipe);
 
-        mContext = this;
-        //AisleAdapter list1Adapter = new AisleAdapter(this,list1Cursor,0);
+        //Dialog box that will hold website link dialog
+        dialogBuilder= NiftyDialogBuilder.getInstance(this);
+
+        //retrieve data
         mDbHelper = new BeelineDbHelper(this);
         db = mDbHelper.getReadableDatabase();
         String whereClause = "ShoppingList.list_title = '" + list_name + "'";
@@ -92,29 +91,57 @@ public class AisleSwipe extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        //=========================================================================================
+        //Custom dialog layout=====================================================================
         ArrayList<String> mLists = getTitles();
         View view = getLayoutInflater().inflate(R.layout.dialogplus, null);
         list_dialog_adapter = new ListCollectAdapter(this,mLists);
         //shopAisles("Example List");
         //=========================================================================================
+
+        //List button
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialogList(view);
-//                Intent listIn = new Intent(getApplicationContext(),ListCollectionActivity.class);
-//                startActivity(listIn);
-//                Snackbar.make(view, "Go to lists", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
+            }
+        });
+
+        //Refresh button
+        FloatingActionButton refresh = (FloatingActionButton) findViewById(R.id.fab_refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent main_reload = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(main_reload);
+            }
+        });
+
+        //Website button
+        FloatingActionButton help = (FloatingActionButton) findViewById(R.id.fab_help);
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogBuilder
+                        .withTitle("Beeline Shopping")
+                        .withIcon(getResources().getDrawable(R.drawable.web_white))
+                        .withDialogColor("#3F51B5")
+                        .withButton1Text("Go To Website")
+                        .setButton1Click(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent myWebLink = new Intent(android.content.Intent.ACTION_VIEW);
+                                myWebLink.setData(Uri.parse("http://45.55.5.83/shopping_lists"));
+                                startActivity(myWebLink);
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -147,16 +174,18 @@ public class AisleSwipe extends AppCompatActivity {
         DialogPlus dialog = DialogPlus.newDialog(mContext)
                 //.setContentHolder(new ViewHolder(R.layout.dialogplus))
                 .setContentHolder(new ListHolder())
-                //.setContentHeight(900)
+                        //.setContentHeight(900)
                 .setGravity(Gravity.CENTER)
                 .setHeader(R.layout.dialogplus)
-                //.setContentBackgroundResource(R.drawable.fruitslist)
+                .setContentBackgroundResource(R.drawable.bckgrnd_dialog)
                 .setInAnimation(R.anim.abc_fade_in)
                 .setAdapter(list_dialog_adapter)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        shopAisles(item.toString());
+                        if (item != null) {
+                            shopAisles(item.toString());
+                        }
 
                     }
                 })
@@ -173,45 +202,16 @@ public class AisleSwipe extends AppCompatActivity {
     }
 
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_aisle_swipe, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
+    //A placeholder fragment containing a simple view.
     public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
+        //The fragment argument representing the section number for this fragment.
         private static final String ARG_SECTION_NUMBER = "section_number";
 
         public PlaceholderFragment() {
         }
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
+        // Returns a new instance of this fragment for the given section number.
         public static PlaceholderFragment newInstance(int sectionNumber) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
@@ -228,16 +228,11 @@ public class AisleSwipe extends AppCompatActivity {
             TextView curr_list_title = (TextView) rootView.findViewById(R.id.section_label);
             int aisle_index = getArguments().getInt(ARG_SECTION_NUMBER);
             String current_Aisle = aisle_list.get(aisle_index);
-            //textView.setText(getString( getArguments().getInt(ARG_SECTION_NUMBER)));
-            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
 
             SpannableString content = new SpannableString(getString(R.string.section_format, current_Aisle));
             content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
             textView.setText(content);
 
-
-//            textView.setText(getString(R.string.section_format, current_Aisle));
-            //textView.setText(getArguments().getInt(ARG_SECTION_NUMBER));
 
             String whereClause1 = "ShoppingList.list_title = '" + list_name + "' AND ShoppingList.aisle = '" + current_Aisle + "' AND ShoppingList.section = \'1\'";
             String whereClause2 = "ShoppingList.list_title = '" + list_name + "' AND ShoppingList.aisle = '" + current_Aisle + "' AND ShoppingList.section = \'2\'";
@@ -262,6 +257,7 @@ public class AisleSwipe extends AppCompatActivity {
             list_view2.setAdapter(aaList2);
             list_view3.setAdapter(aaList3);
 
+
             String crStr = dbUtils.dumpCursorToString(cList1);
 
 
@@ -269,11 +265,10 @@ public class AisleSwipe extends AppCompatActivity {
         }
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+      //A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+      //one of the sections/tabs/pages.
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
         int aisle_count;
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -288,14 +283,6 @@ public class AisleSwipe extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            String atest = "nada";
-            if(position == 2 || position == 3){
-                atest = "this is 2 or 3";
-            }else{
-                atest = "this is NOT 2 or 3";
-            }
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
             return PlaceholderFragment.newInstance(position);
         }
 

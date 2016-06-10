@@ -122,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
                 focusView.requestFocus();
             }
         } else {
-            //showProgress(true);
+            showProgress(true);
             //------------------------------------------------------------------------------------
             HttpHandler.setCredentials(email,password);
             loginTask = new GetRequestTask();
@@ -140,8 +140,10 @@ public class LoginActivity extends AppCompatActivity {
                 }else{
                     loginTask = null;
                     Toast toast = Toast.makeText(context,
-                            "Login Failed. Wrong Phone Number/pin", Toast.LENGTH_SHORT);
+                            "Login Failed. Wrong Phone Number/pin", Toast.LENGTH_LONG);
                     toast.show();
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
                 }
 
             } catch (InterruptedException | ExecutionException e) {

@@ -20,6 +20,7 @@ public class BeelineDbHelper extends SQLiteOpenHelper {
                     BeelineContract.ShoppingListDetails.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
                     BeelineContract.ShoppingListDetails.COLUMN_NAME_SECTION + TEXT_TYPE + COMMA_SEP +
                     BeelineContract.ShoppingListDetails.COLUMN_NAME_AISLE + TEXT_TYPE + COMMA_SEP +
+                    BeelineContract.ShoppingListDetails.COLUMN_NAME_STRIKEOUT + TEXT_TYPE + " DEFAULT \'No\'" + COMMA_SEP +
                     BeelineContract.ShoppingListDetails.COLUMN_NAME_STORE + TEXT_TYPE +
                     " )";
     private static final String SQL_CREATE_USER_TABLE =
@@ -39,7 +40,7 @@ public class BeelineDbHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + BeelineContract.ShoppingListDetails.TABLE_NAME;
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 33;
+    public static final int DATABASE_VERSION = 34;
     public static final String DATABASE_NAME = "Food.db";
 
     public BeelineDbHelper(Context context) {

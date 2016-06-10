@@ -43,7 +43,8 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity android:name=".UserLoginAcitivy" />
-        <activity android:name=".ListCollectionActivity">
+        <activity android:name=".ListCollectionActivity"
+            android:screenOrientation="portrait">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
 
@@ -53,8 +54,10 @@
         <activity
             android:name=".Aisles"
             android:label="@string/title_activity_aisles" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".Aisle">
+        <activity android:name=".LoginActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Aisle"
+            android:screenOrientation="portrait">
 
              <!--<intent-filter>-->
              <!--<action android:name="android.intent.action.MAIN" />-->
@@ -76,7 +79,8 @@
         <activity
             android:name=".AisleSwipe"
             android:label="@string/title_activity_aisle_swipe"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
 
